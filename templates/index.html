@@ -28,15 +28,15 @@
                 <p>Turn your python packages into native DEB or RPM packages.</p>
                 <p>Works with most packages on pypi, github and bitbucket. Try <a href="{{ url_for('build_from_pypi', name='stream', target='deb') }}">stream</a> from pypi.
                 </p>
-                <form action="#">
+                <form action="{{ url_for('build_from_user_input') }}" method=POST>
                     <div class="row">
                         <div class="large-12 columns">
                             <div class="row collapse">
                                 <div class="small-10 columns">
-                                    <input type="text" placeholder="github.com/miku/gluish">
+                                    <input id="ghid" name="ghid" type="text" placeholder="github.com/miku/gluish">
                                 </div>
                                 <div class="small-2 columns">
-                                    <a href="#" class="button postfix">Go</a>
+                                    <input type=submit class="button postfix" value=Go />
                                 </div>
                             </div>
                         </div>
