@@ -3,13 +3,8 @@ README
 
 Turn your python code into native packages and ship faster.
 
-Works with all packages on pypi. Works with open source projects
-hosted on Github and Bitbucket.
-
-Acts as an DEB/RPM repository. Add these package repositories
-to your system one and start installing python packages
-just like native packages. Boom.
-
+Works with all packages on pypi. Works with many
+open source projects hosted on Github and Bitbucket.
 
 Problem
 -------
@@ -32,8 +27,11 @@ borg on the deployment machine. Then give borg a unique
 identifier (e.g. URL), and borg will fetch the zip (Option 1),
 extract and install it on its own.
 
+Option 4: ...
 
-First iteration
----------------
+Screenie
+--------
+
+First screenshot, built by a small [pre-commit hook](https://gist.github.com/miku/111bb2c029ffe89475d7).
 
 ![Screenshot](http://i.imgur.com/ubCMsdU.png)
