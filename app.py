@@ -81,16 +81,20 @@ def build_from_pypi(name, target):
     cache = shelve.open(CACHE)
 
     if not cache_key in cache:
-        logger.debug(   'Building %s for %s...' % (target, name))
+        logger.debug('Building %s for %s...' % (target, name))
         stopover = tempfile.mkdtemp(prefix='pkpy-')
-        shellout('cd {stopover} && fpm --verbose -s python -t {target} {name}',
-                 stopover=stopover, name=name, target=target)
-        src = iterfiles(stopover).next()
-        basename = os.path.basename(src)
-        dst = os.path.join(app.static_folder, basename)
-        shellout('cp {src} {dst}', src=src, dst=dst)
-        shutil.rmtree(stopover)
-        cache[cache_key] = basename
+        try:
+            shellout('cd {stopover} && fpm --verbose -s python -t {target} {name}',
+                     stopover=stopover, name=name, target=target)
+            src = iterfiles(stopover).next()
+            basename = os.path.basename(src)
+            dst = os.path.join(app.static_folder, basename)
+            shellout('cp {src} {dst}', src=src, dst=dst)
+            shutil.rmtree(stopover)
+            cache[cache_key] = basename
+        except RuntimeError as err:
+            logger.error(err)
+            return abort(404)
     else:
         logger.debug('Cache hit...')
 
