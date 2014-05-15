@@ -64,4 +64,4 @@ Screenie
 
 First screenshot:
 
-![Screenshot](http://i.imgur.com/ubCMsdU.png)
+![Screenshot](https://cdn.mediacru.sh/xV4nJ9Dyot8b.png)
