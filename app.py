@@ -27,7 +27,7 @@ def build_from_github(username, repo, target):
 
     if not cache_key in cache:
         logger.debug('Building (%s, %s) ...' % (repo_url, target))
-        stopover = tempfile.mkdtemp(prefix='pkpy')
+        stopover = tempfile.mkdtemp(prefix='pkpy-')
         shellout("""
             cd {stopover} && git clone {repo_url} &&
             cd {repo} && fpm --verbose -s python -t {target} .""",
@@ -58,7 +58,7 @@ def build_from_pypi(name, target):
 
     if not cache_key in cache:
         logger.debug(   'Building %s for %s...' % (target, name))
-        stopover = tempfile.mkdtemp(prefix='pypack')
+        stopover = tempfile.mkdtemp(prefix='pkpy-')
         shellout('cd {stopover} && fpm --verbose -s python -t {target} {name}',
                  stopover=stopover, name=name, target=target)
         src = iterfiles(stopover).next()
