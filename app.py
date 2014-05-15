@@ -3,6 +3,7 @@
 from flask import Flask, render_template, redirect, url_for, abort, send_from_directory
 from gluish.path import iterfiles
 from gluish.utils import shellout
+import hashlib
 import logging
 import os
 import shelve
@@ -21,7 +22,7 @@ def build_from_github(username, repo, target):
         return abort(404)
     repo_url = 'git@github.com:%s/%s.git' % (username, repo)
 
-    cache_key = '%s %s' % (repo_url, target)
+    cache_key = hashlib.sha1('%s:%s' % (repo_url, target)).hexdigest()
     cache = shelve.open(CACHE)
 
     if not cache_key in cache:
@@ -52,7 +53,7 @@ def build_from_pypi(name, target):
     if not target in ('deb', 'rpm'):
         return abort(404)
 
-    cache_key = '%s %s' % (name, target)
+    cache_key = hashlib.sha1('%s:%s' % (name, target)).hexdigest()
     cache = shelve.open(CACHE)
 
     if not cache_key in cache:
