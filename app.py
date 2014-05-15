@@ -42,7 +42,8 @@ def build_from_github(username, repo, target):
     filename = cache[cache_key]
     cache.close()
 
-    return send_from_directory(app.static_folder, filename, as_attachment=True)
+    return send_from_directory(app.static_folder, filename, as_attachment=True,
+                               attachment_filename=filename)
 
 
 @app.route("/pypi/<name>/<target>")
@@ -70,7 +71,8 @@ def build_from_pypi(name, target):
     filename = cache[cache_key]
     cache.close()
 
-    return send_from_directory(app.static_folder, filename, as_attachment=True)
+    return send_from_directory(app.static_folder, filename, as_attachment=True,
+                               attachment_filename=filename)
 
 @app.route("/")
 def hello():
