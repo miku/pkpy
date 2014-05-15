@@ -22,9 +22,9 @@ as root. Done. Pro: No custom repository needed.
 
 Option 2: Set up some package repository.
 
-Option 3: Create a separate package, something like borg. Install
-borg on the deployment machine. Then give borg a unique
-identifier (e.g. URL), and borg will fetch the zip (Option 1),
+Option 3: Create a separate package, something like pkpy. Install
+pkpy on the deployment machine. Then give pkpy a unique
+identifier (e.g. URL), and pkpy will fetch the zip (Option 1),
 extract and install it on its own.
 
 Option 4: ...
@@ -32,9 +32,9 @@ Option 4: ...
 Getting started
 ---------------
 
-    $ git clone https://github.com/miku/borghq.git
-    $ cd borghq
-    $ mkvirtualenv borghq
+    $ git clone https://github.com/miku/pkpy.git
+    $ cd pkpy
+    $ mkvirtualenv pkpy
     $ pip install -r requirements
     $ python app.py
     2014-05-15 12:19:18,982 INFO  * Running on http://0.0.0.0:5000/

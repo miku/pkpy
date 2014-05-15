@@ -9,7 +9,7 @@ import shelve
 import tempfile
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
-logger = logging.getLogger('borghq')
+logger = logging.getLogger('pkpy')
 
 app = Flask(__name__)
 CACHE = os.path.join(app.static_folder, '.cache.shelve')
@@ -26,7 +26,7 @@ def build_from_github(username, repo, target):
 
     if not cache_key in cache:
         logger.debug('Building (%s, %s) ...' % (repo_url, target))
-        stopover = tempfile.mkdtemp(prefix='borghq')
+        stopover = tempfile.mkdtemp(prefix='pkpy')
         shellout("""
             cd {stopover} && git clone {repo_url} &&
             cd {repo} && fpm --verbose -s python -t {target} .""",
