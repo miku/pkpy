@@ -33,3 +33,7 @@ identifier (e.g. URL), and borg will fetch the zip (Option 1),
 extract and install it on its own.
 
 
+First iteration
+---------------
+
+![Screenshot](http://i.imgur.com/ubCMsdU.png)
