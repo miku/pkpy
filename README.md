@@ -62,6 +62,6 @@ From another terminal:
 Screenie
 --------
 
-First screenshot, built by a small [pre-commit hook](https://gist.github.com/miku/111bb2c029ffe89475d7).
+First screenshot:
 
 ![Screenshot](http://i.imgur.com/ubCMsdU.png)
