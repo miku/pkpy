@@ -1,35 +1,79 @@
-<html>
+<!doctype html>
+<html class="no-js" lang="en">
 <head>
-    <title>pkpy index</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PKPY</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.css') }}" />
+    <script src="{{ url_for('static', filename='js/vendor/modernizr.js') }}"></script>
     <style type="text/css">
     body {
-        font-family: Helvetica;
+        background: url({{ url_for('static', filename='images/ranger_block11.jpg') }});
     }
-    </style>
+    .container {
+        background: #efefef;
+    }
+    </style>    
 </head>
 <body>
-    <h1>pkpy &mdash; </h1>
-    <p>Turn your python packages into native DEB or RPM packages.</p>
-    <p>Works with most packages on pypi, github and bitbucket. Try
-        <a href="{{ url_for('build_from_pypi', name='stream', target='deb') }}">stream</a> from pypi.
-    </p>
+    <div class="container">
+        <div class="row">
+            <div class="large-12 columns">
+                <h1>PKPY</h1>
+            </div>
+        </div>
 
-    <p>Other examples</p>
-    <ul>
-        <li><a href="{{ url_for('build_from_pypi', name='luigi', 
-                        target='deb') }}">luigi</a> (deb)</li>
-        <li><a href="{{ url_for('build_from_pypi', name='luigi', 
-                        target='rpm') }}">luigi</a> (rpm)</li>
-        <li><a href="{{ url_for('build_from_pypi', name='pandas', 
-                        target='deb') }}">pandas</a> (deb)</li>
-        <li><a href="{{ url_for('build_from_pypi', name='pandas',
-                        target='rpm') }}">pandas</a> (rpm)</li>
-    </ul>
-    <p>Build from Github</p>
-    <ul>
-        <li><a href="{{ url_for('build_from_github', username='miku',
-                        repo='gluish', target='deb') }}">miku/gluish</a> (deb)</li>
-    </ul>
+        <div class="row">
+            <div class="large-4 columns">
+                <p>Turn your python packages into native DEB or RPM packages.</p>
+                <p>Works with most packages on pypi, github and bitbucket. Try <a href="{{ url_for('build_from_pypi', name='stream', target='deb') }}">stream</a> from pypi.
+                </p>
+                <form action="#">
+                    <div class="row">
+                        <div class="large-12 columns">
+                            <div class="row collapse">
+                                <div class="small-10 columns">
+                                    <input type="text" placeholder="github.com/miku/gluish">
+                                </div>
+                                <div class="small-2 columns">
+                                    <a href="#" class="button postfix">Go</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="large-4 columns">
+                <h3>Other examples</h3>
+                <ul>
+                    <li><a href="{{ url_for('build_from_pypi', name='luigi', target='deb') }}">luigi</a> (deb)</li>
+                    <li><a href="{{ url_for('build_from_pypi', name='luigi',  target='rpm') }}">luigi</a> (rpm)</li>
+                    <li><a href="{{ url_for('build_from_pypi', name='pandas', target='deb') }}">pandas</a> (deb)</li>
+                    <li><a href="{{ url_for('build_from_pypi', name='pandas', target='rpm') }}">pandas</a> (rpm)</li>
+                </ul>
+            </div>
+
+            <div class="large-4 columns">
+                <h3>Build from Github</h3>
+                <ul>
+                    <li><a href="{{ url_for('build_from_github', username='miku', repo='gluish', target='deb') }}">miku/gluish</a> (deb)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="large-12 columns">
+                <h3>Mode of operation</h3>
+                <p>Enter the name of a Python repository into the box and hit enter.
+                    PKPY will create a download page for RPM, DEB and i386 or x86_64
+                    when necessary. Download a single zipfile with all necessary packages and install
+                    them on you deployment server with standard tools like yum or dpkg.
+                </p>
+            </div>
+        </div>
+
+    </div>
 
 </body>
 </html>
