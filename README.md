@@ -29,6 +29,36 @@ extract and install it on its own.
 
 Option 4: ...
 
+Getting started
+---------------
+
+    $ git clone https://github.com/miku/borghq.git
+    $ cd borghq
+    $ mkvirtualenv borghq
+    $ pip install -r requirements
+    $ python app.py
+    2014-05-15 12:19:18,982 INFO  * Running on http://0.0.0.0:5000/
+    2014-05-15 12:19:18,982 INFO  * Restarting with reloader
+    ....
+
+From another terminal:
+
+    # create package from pypi
+    $ wget "localhost:5000/pypi/elasticsearch/deb"
+    ...
+    ... - 'python-elasticsearch_1.0.0_all.deb' saved [76828/76828]
+
+    # create package from pypi with C bindings
+    $ wget "localhost:5000/pypi/numpy/rpm"
+    ...
+    ... - 'python-numpy-1.8.1-1.x86_64.rpm' saved [4203449/4203449]
+
+    # create package from github
+    $ wget "localhost:5000/github/miku/gluish/rpm"
+    ...
+    ... - 'python-gluish-0.1.36-1.noarch.rpm' saved [44049/44049]
+
+
 Screenie
 --------
 
