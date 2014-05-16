@@ -1,5 +1,10 @@
 # coding: utf-8
 
+"""
+PKPY python packager app.
+"""
+
+# pylint: disable=F0401
 from flask import Flask, render_template, abort, send_from_directory, request
 from gluish.path import iterfiles
 from gluish.utils import shellout
@@ -10,7 +15,8 @@ import shelve
 import shutil
 import tempfile
 
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
+                    level=logging.DEBUG)
 logger = logging.getLogger('pkpy')
 
 app = Flask(__name__)
@@ -24,12 +30,14 @@ PACKAGE_QUOTA = 10000000
 
 @app.before_request
 def ensure_package_cache():
+    """ Make sure the package cache directory exists. """
     if not os.path.exists(PACKAGE_CACHE):
         os.makedirs(PACKAGE_CACHE)
 
 
 @app.before_request
 def abort_on_overquota(quota=PACKAGE_QUOTA, directory=PACKAGE_CACHE):
+    """ Abort with 503 as soon the PACKAGE_CACHE exceeds QUOTA. """
     total = 0
     for filename in os.listdir(directory):
         total += os.path.getsize(os.path.join(directory, filename))
@@ -42,6 +50,7 @@ def abort_on_overquota(quota=PACKAGE_QUOTA, directory=PACKAGE_CACHE):
 
 @app.errorhandler(404)
 def page_not_found(e):
+    """ 404. """
     return render_template('404.html'), 404
 
 
@@ -73,45 +82,8 @@ def github_clone_and_build(username, repo, target='deb'):
     return filename
 
 
-@app.route("/q", methods=["POST"])
-def build_from_user_input():
-    """ Handles user input. E.g. username/repo
-    TODO: allow to give just package names, which are resolved
-    over pypi. """
-    target = request.form.get('target', 'deb')
-    if not target in ('deb', 'rpm'):
-        return abort(404)
-    github_id = request.form.get('ghid')
-    username, repo = github_id.split('/', 1)
-    try:
-        filename = github_clone_and_build(username, repo, target)
-    except RuntimeError as err:
-        logger.error("Could not find or build %s for %s/%s: %s" % (
-                     target, username, repo, err))
-        return abort(404)
-    return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
-                               attachment_filename=filename)
-
-
-@app.route("/github/<username>/<repo>/<target>")
-def build_from_github(username, repo, target):
-    if not target in ('deb', 'rpm'):
-        return abort(404)
-    try:
-        filename = github_clone_and_build(username, repo, target)
-    except RuntimeError as err:
-        logger.error("Could not build %s: %s" % (repo_url, err))
-        return abort(404)
-    return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
-                               attachment_filename=filename)
-
-
-@app.route("/pypi/<name>/<target>")
-def build_from_pypi(name, target):
-    """ Does not cache anything. Serves from static. """
-    if not target in ('deb', 'rpm'):
-        return abort(404)
-
+def pypi_build(name, target='deb'):
+    """ Take a package name and return the filename of the target. """
     cache_key = hashlib.sha1('%s:%s' % (name, target)).hexdigest()
     cache = shelve.open(CACHE)
 
@@ -119,7 +91,8 @@ def build_from_pypi(name, target):
         logger.debug('Building %s for %s...' % (target, name))
         stopover = tempfile.mkdtemp(prefix='pkpy-')
         try:
-            shellout('cd {stopover} && fpm --verbose -s python -t {target} {name}',
+            shellout("""cd {stopover} && 
+                        fpm --verbose -s python -t {target} {name}""",
                      stopover=stopover, name=name, target=target)
             src = iterfiles(stopover).next()
             basename = os.path.basename(src)
@@ -135,12 +108,67 @@ def build_from_pypi(name, target):
 
     filename = cache[cache_key]
     cache.close()
+    return filename
 
+
+@app.route("/q", methods=["POST"])
+def build_from_user_input():
+    """ Handles user input. E.g. username/repo
+    TODO: allow to give just package names, which are resolved
+    over pypi. """
+    target = request.form.get('target', 'deb')
+    if not target in ('deb', 'rpm'):
+        return abort(404)
+    name = request.form.get('package')
+    if name.count('/') == 1:
+        username, repo = name.split('/', 1)
+        try:
+            filename = github_clone_and_build(username, repo, target)
+        except RuntimeError as err:
+            logger.error("Fail: %s/%s (%s): %s" % (username, repo, target, err))
+            return abort(404)
+    elif name.count('/') == 0:
+        try:
+            filename = pypi_build(name, target=target)
+        except RuntimeError as err:
+            logger.error('Fail: %s from %s via pypi: %s' % (target, name, err))
+            return abort(404)
+    else:
+        return abort(404)
+    return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
+                               attachment_filename=filename)
+
+
+@app.route("/github/<username>/<repo>/<target>")
+def build_from_github(username, repo, target):
+    """ Create download from github username, repo and target. """
+    if not target in ('deb', 'rpm'):
+        return abort(404)
+    try:
+        filename = github_clone_and_build(username, repo, target)
+    except RuntimeError as err:
+        logger.error("Fail: %s/%s: %s" % (username, repo, err))
+        return abort(404)
+    return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
+                               attachment_filename=filename)
+
+
+@app.route("/pypi/<name>/<target>")
+def build_from_pypi(name, target):
+    """ Does not cache anything. Serves from static. """
+    if not target in ('deb', 'rpm'):
+        return abort(404)
+    try:
+        filename = pypi_build(name, target=target)
+    except RuntimeError as err:
+        logger.error('Fail: %s from %s via pypi: %s' % (target, name, err))
+        abort(404)
     return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
                                attachment_filename=filename)
 
 @app.route("/")
 def hello():
+    """ Index. """
     return render_template('index.html')
 
 if __name__ == "__main__":
