@@ -41,11 +41,12 @@ def abort_on_overquota(quota=PACKAGE_QUOTA, directory=PACKAGE_CACHE):
     total = 0
     for filename in os.listdir(directory):
         total += os.path.getsize(os.path.join(directory, filename))
+    ratio = (float(total) / quota) * 100
     if total > quota:
-        logger.error('OVERQUOTA: %s/%s' % (total, quota))
+        logger.error('OVERQUOTA: %s/%s (%0.2f%%)' % (total, quota, ratio))
         return abort(503)
     else:
-        logger.debug('QUOTA OK: %s/%s' % (total, quota))
+        logger.debug('QUOTA OK: %s/%s (%0.2f%%)' % (total, quota, ratio))
 
 
 @app.errorhandler(404)
