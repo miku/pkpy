@@ -1,0 +1,26 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PKPY</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.css') }}" />
+    <script src="{{ url_for('static', filename='js/vendor/modernizr.js') }}"></script>
+    <style type="text/css">
+    body {
+        background: url({{ url_for('static', filename='images/ranger_block11.jpg') }});
+    }
+    .container {
+        background: #efefef;
+    }
+    </style>    
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="large-12 columns">
+                <h1><a href="{{ url_for('hello') }}">PKPY</a> 404</h1>
+                <p>Sorry, the package or page could not be found or could not be built.</p>
+            </div>
+        </div>
+</div></body></html>
