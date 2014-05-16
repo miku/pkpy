@@ -167,10 +167,12 @@ def build_from_pypi(name, target):
     return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
                                attachment_filename=filename)
 
+
 @app.route("/")
 def hello():
     """ Index. """
     return render_template('index.html')
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
