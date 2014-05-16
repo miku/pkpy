@@ -33,13 +33,22 @@
                         <div class="large-12 columns">
                             <div class="row collapse">
                                 <div class="small-10 columns">
-                                    <input id="ghid" name="ghid" type="text" placeholder="github.com/miku/gluish">
+				    <input title="github username/repo" id="ghid" name="ghid" type="text" placeholder="miku/gluish">
                                 </div>
                                 <div class="small-2 columns">
                                     <input type=submit class="button postfix" value=Go />
                                 </div>
                             </div>
                         </div>
+
+			    <div class="large-12 columns">
+				<input type="radio" name="target" value="deb"
+				    id="target-deb" checked=true><label for="target-deb">DEB</label>
+				<input type="radio" name="target" value="rpm"
+				    id="target-rpm"><label for="target-rpm">RPM</label>
+			    </div>
+
+
                     </div>
                 </form>
             </div>

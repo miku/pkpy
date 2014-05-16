@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from flask import Flask, render_template, redirect, url_for, abort, send_from_directory, request
+from flask import Flask, render_template, abort, send_from_directory, request
 from gluish.path import iterfiles
 from gluish.utils import shellout
 import hashlib
@@ -14,7 +14,35 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=loggin
 logger = logging.getLogger('pkpy')
 
 app = Flask(__name__)
+
+# CACHE: hashed(package name) -> package file
+# PACKAGE_CACHE: the directory the artefacts reside in (subject to QUOTA)
 CACHE = os.path.join(app.static_folder, '.cache.shelve')
+PACKAGE_CACHE = os.path.join(app.static_folder, '.cache.packages')
+PACKAGE_QUOTA = 10000000
+
+
+@app.before_request
+def ensure_package_cache():
+    if not os.path.exists(PACKAGE_CACHE):
+	os.makedirs(PACKAGE_CACHE)
+
+
+@app.before_request
+def abort_on_overquota(quota=PACKAGE_QUOTA, directory=PACKAGE_CACHE):
+    total = 0
+    for filename in os.listdir(directory):
+	total += os.path.getsize(os.path.join(directory, filename))
+    if total > quota:
+	logger.error('OVERQUOTA: %s/%s' % (total, quota))
+	return abort(503)
+    else:
+	logger.debug('QUOTA OK: %s/%s' % (total, quota))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 def github_clone_and_build(username, repo, target='deb'):
@@ -34,7 +62,7 @@ def github_clone_and_build(username, repo, target='deb'):
                  stopover=stopover, repo_url=repo_url, repo=repo, target=target)
         src = iterfiles(stopover, fun=lambda fn: fn.endswith(target)).next()
         basename = os.path.basename(src)
-        dst = os.path.join(app.static_folder, basename)
+	dst = os.path.join(PACKAGE_CACHE, basename)
         shellout('cp {src} {dst}', src=src, dst=dst)
         shutil.rmtree(stopover)
         cache[cache_key] = basename
@@ -47,14 +75,18 @@ def github_clone_and_build(username, repo, target='deb'):
 
 @app.route("/q", methods=["POST"])
 def build_from_user_input():
+    target = request.form.get('target', 'deb')
+    if not target in ('deb', 'rpm'):
+	return abort(404)
     github_id = request.form.get('ghid')
     username, repo = github_id.split('/', 1)
     try:
-        filename = github_clone_and_build(username, repo, 'deb')
+	filename = github_clone_and_build(username, repo, target)
     except RuntimeError as err:
-        logger.error("Could not build %s" % repo_url)
+	logger.error("Could not find or build %s for %s/%s: %s" % (
+		     target, username, repo, err))
         return abort(404)
-    return send_from_directory(app.static_folder, filename, as_attachment=True,
+    return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
                                attachment_filename=filename)
 
 
@@ -65,9 +97,9 @@ def build_from_github(username, repo, target):
     try:
         filename = github_clone_and_build(username, repo, target)
     except RuntimeError as err:
-        logger.error("Could not build %s" % repo_url)
+	logger.error("Could not build %s: %s" % (repo_url, err))
         return abort(404)
-    return send_from_directory(app.static_folder, filename, as_attachment=True,
+    return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
                                attachment_filename=filename)
 
 
@@ -88,7 +120,7 @@ def build_from_pypi(name, target):
                      stopover=stopover, name=name, target=target)
             src = iterfiles(stopover).next()
             basename = os.path.basename(src)
-            dst = os.path.join(app.static_folder, basename)
+	    dst = os.path.join(PACKAGE_CACHE, basename)
             shellout('cp {src} {dst}', src=src, dst=dst)
             shutil.rmtree(stopover)
             cache[cache_key] = basename
@@ -101,7 +133,7 @@ def build_from_pypi(name, target):
     filename = cache[cache_key]
     cache.close()
 
-    return send_from_directory(app.static_folder, filename, as_attachment=True,
+    return send_from_directory(PACKAGE_CACHE, filename, as_attachment=True,
                                attachment_filename=filename)
 
 @app.route("/")
