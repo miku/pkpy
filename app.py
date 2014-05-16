@@ -25,7 +25,7 @@ app = Flask(__name__)
 # PACKAGE_CACHE: the directory the artefacts reside in (subject to QUOTA)
 CACHE = os.path.join(app.static_folder, '.cache.shelve')
 PACKAGE_CACHE = os.path.join(app.static_folder, '.cache.packages')
-PACKAGE_QUOTA = 10000000
+PACKAGE_QUOTA = 104857600 # 100M
 
 
 @app.before_request
@@ -73,7 +73,7 @@ def github_clone_and_build(username, repo, target='deb'):
         src = iterfiles(stopover, fun=lambda fn: fn.endswith(target)).next()
         basename = os.path.basename(src)
         dst = os.path.join(PACKAGE_CACHE, basename)
-        shellout('cp {src} {dst}', src=src, dst=dst)
+        shutil.copyfile(src, dst)
         shutil.rmtree(stopover)
         cache[cache_key] = basename
     else:
@@ -98,7 +98,7 @@ def pypi_build(name, target='deb'):
             src = iterfiles(stopover).next()
             basename = os.path.basename(src)
             dst = os.path.join(PACKAGE_CACHE, basename)
-            shellout('cp {src} {dst}', src=src, dst=dst)
+            shutil.copyfile(src, dst)
             shutil.rmtree(stopover)
             cache[cache_key] = basename
         except RuntimeError as err:
