@@ -75,6 +75,9 @@ def github_clone_and_build(username, repo, target='deb'):
 
 @app.route("/q", methods=["POST"])
 def build_from_user_input():
+    """ Handles user input. E.g. username/repo
+    TODO: allow to give just package names, which are resolved
+    over pypi. """
     target = request.form.get('target', 'deb')
     if not target in ('deb', 'rpm'):
         return abort(404)
