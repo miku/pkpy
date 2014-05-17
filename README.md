@@ -59,9 +59,13 @@ From another terminal:
     ... - 'python-gluish-0.1.36-1.noarch.rpm' saved [44049/44049]
 
 
-Screenie
---------
-
-First screenshot:
+Screenshot
+----------
 
 ![Screenshot](https://cdn.mediacru.sh/xV4nJ9Dyot8b.png)
+
+
+Further reading
+---------------
+
+[State of the Python/PyPi dependency graph](http://ogirardot.wordpress.com/2013/01/05/state-of-the-pythonpypi-dependency-graph/)
