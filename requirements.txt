@@ -2,7 +2,7 @@ BeautifulSoup==3.2.1
 Flask==0.10.1
 Jinja2==2.7.2
 MarkupSafe==0.23
-Werkzeug==0.9.4
+Werkzeug==0.15.3
 colorama==0.2.7
 elasticsearch==1.0.0
 gluish==0.1.36
